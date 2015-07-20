@@ -1,10 +1,5 @@
 Simple C# ImageResizer library using wpf classes
 
-Demo: [http://imageresizer.apphb.com/](http://imageresizer.apphb.com/)
-
-Available on NuGet:
-PM> Install-Package Simple.ImageResizer
-
 Please note that this library is not related to the http://imageresizing.net/ project
 
 Usage:
@@ -22,6 +17,13 @@ var byteArray3 = resizer.Resize(400, 200, false, ImageEncoding.Gif);
 
 // save last resized image to file
 resizer.SaveToFile(@"c:\path\to\image_resized.gif");
+
+// Get input image Width in pixel
+resizer.InputImageWidth
+
+// Get input image Height in pixel
+resizer.InputImageHeight
+
 </pre>
 
 Or

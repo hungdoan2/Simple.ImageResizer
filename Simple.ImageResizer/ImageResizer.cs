@@ -24,7 +24,19 @@ namespace Simple.ImageResizer
             _orgBitMap = LoadBitmapImage(_imageBytes);
         }
 
+        public int InputImageWidth
+        {
+            get { return _orgBitMap.PixelWidth; }
+        }
+        public int InputImageHeight
+        {
+            get { return _orgBitMap.PixelHeight; }
+        }
         public byte[] Resize(int width, ImageEncoding encoding)
+        {
+            return Resize(width, 0, encoding);
+        }
+        public byte[] ResizeIfWidthLargerThan(int width, ImageEncoding encoding)
         {
             return Resize(width, 0, encoding);
         }
