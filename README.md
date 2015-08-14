@@ -24,6 +24,9 @@ resizer.InputImageWidth
 // Get input image Height in pixel
 resizer.InputImageHeight
 
+// Resize if image width greater than 720 pixel.
+var byteArray4 = resizer.ResizeIfWidthLargerThan(720, ImageEncoding.Png);
+
 </pre>
 
 Or
