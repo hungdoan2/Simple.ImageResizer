@@ -11,6 +11,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Simple.ImageResizer.MvcDemo.Properties;
 using Simple.ImageResizer.MvcDemo.ViewModels;
+using System.Windows.Media.Imaging;
 
 namespace Simple.ImageResizer.MvcDemo.Controllers
 {
@@ -40,13 +41,15 @@ namespace Simple.ImageResizer.MvcDemo.Controllers
                     {
                         Name = "Large",
                         Width = 700,
-                        ImageEncoding = ImageEncoding.Jpg90
+                        //ImageEncoding = ImageEncoding.Jpg90
+                        encoder = new JpegBitmapEncoder { QualityLevel = 100 }
                     },
                     new ResizeSetting
                     {
                         Name = "Small",
-                        Width = 300,
-                        ImageEncoding = ImageEncoding.Jpg90
+                        Width = 700,
+                        encoder = new JpegBitmapEncoder { QualityLevel = 50 }
+                        //ImageEncoding = ImageEncoding.Jpg90
                     },
                     new ResizeSetting
                     {
@@ -102,6 +105,7 @@ namespace Simple.ImageResizer.MvcDemo.Controllers
         public int Width { get; set; }
         public int Height { get; set; }
         public ImageEncoding ImageEncoding { get; set; }
+        public BitmapEncoder encoder { get; set; }
 
     }
 

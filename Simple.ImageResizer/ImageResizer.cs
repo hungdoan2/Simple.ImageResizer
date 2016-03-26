@@ -36,6 +36,12 @@ namespace Simple.ImageResizer
         {
             return Resize(width, 0, encoding);
         }
+
+        public byte[] Resize(int width, BitmapEncoder encoder)
+        {
+            return Resize(width, 0, encoder);
+        }
+
         public byte[] ResizeIfWidthLargerThan(int width, ImageEncoding encoding)
         {
             return Resize(width, 0, encoding);
@@ -51,6 +57,11 @@ namespace Simple.ImageResizer
         public byte[] Resize(int width, int height, ImageEncoding encoding)
         {
             return Resize(width, height, true, encoding);
+        }
+
+        public byte[] Resize(int width, int height, BitmapEncoder encode)
+        {
+            return Resize(width, height, true, encode);
         }
 
         /// <summary>
@@ -87,6 +98,33 @@ namespace Simple.ImageResizer
             return _imageBytes;
         }
 
+
+        public byte[] Resize(int width, int height, bool crop, BitmapEncoder encode)
+        {
+            if (width < 0)
+                throw new ArgumentException("width < 0");
+            if (height < 0)
+                throw new ArgumentException("height < 0");
+
+            BitmapSource bitmapSource = null;
+
+            if (width > 0 && height > 0 && crop)
+            {
+                bitmapSource = ScaleToFill(width, height);
+            }
+            else if (width > 0 && height > 0 && !crop)
+            {
+                bitmapSource = ScaleToFit(width, height);
+            }
+            else if (width > 0)
+            {
+                bitmapSource = ResizeImageByWidth(_imageBytes, width);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encode);
+            return _imageBytes;
+        }
+
         private BitmapSource ScaleToFill(int width, int height)
         {
             Contract.Requires(width > 0);
@@ -97,7 +135,7 @@ namespace Simple.ImageResizer
 
             BitmapSource bitmapSource;
             ImageSize imageSize;
-            
+
             if (heightRatio > widthRatio)
             {
                 bitmapSource = ResizeImageByHeight(_imageBytes, height);
@@ -215,19 +253,51 @@ namespace Simple.ImageResizer
             }
             if (image is BitmapSource)
             {
-                var stream = new MemoryStream();
-                if (encoder != null)
+                using (var stream = new MemoryStream())
                 {
-                    var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
-                    encoder.Frames.Add(bitmapFrame);
-                    encoder.Save(stream);
+                    if (encoder != null)
+                    {
+                        var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
+                        encoder.Frames.Add(bitmapFrame);
+                        encoder.Save(stream);
+                    }
+                    stream.Seek(0L, SeekOrigin.Begin);
+                    buffer = new byte[stream.Length];
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        reader.Read(buffer, 0, (int)stream.Length);
+                        reader.Close();
+                    }
+                    stream.Close();
                 }
-                stream.Seek(0L, SeekOrigin.Begin);
-                buffer = new byte[stream.Length];
-                var reader = new BinaryReader(stream);
-                reader.Read(buffer, 0, (int)stream.Length);
-                reader.Close();
-                stream.Close();
+
+            }
+            return buffer;
+        }
+
+
+        private byte[] EncodeImageData(ImageSource image, BitmapEncoder encoder)
+        {
+            byte[] buffer = null;
+            if (image is BitmapSource)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    if (encoder != null)
+                    {
+                        var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
+                        encoder.Frames.Add(bitmapFrame);
+                        encoder.Save(stream);
+                    }
+                    stream.Seek(0L, SeekOrigin.Begin);
+                    buffer = new byte[stream.Length];
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        reader.Read(buffer, 0, (int)stream.Length);
+                        reader.Close();
+                    }
+                    stream.Close();
+                }
             }
             return buffer;
         }
