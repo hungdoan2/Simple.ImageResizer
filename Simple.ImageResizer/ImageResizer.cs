@@ -37,9 +37,9 @@ namespace Simple.ImageResizer
             return Resize(width, 0, encoding);
         }
 
-        public byte[] Resize(int width, ImageEnCode objImage)
+        public byte[] Resize(int width, ImageEncode encode)
         {
-            return Resize(width, 0, objImage);
+            return Resize(width, 0, encode);
         }
 
         public byte[] ResizeIfWidthLargerThan(int width, ImageEncoding encoding)
@@ -59,9 +59,9 @@ namespace Simple.ImageResizer
             return Resize(width, height, true, encoding);
         }
 
-        public byte[] Resize(int width, int height, ImageEnCode objImage)
+        public byte[] Resize(int width, int height, ImageEncode encode)
         {
-            return Resize(width, height, true, objImage);
+            return Resize(width, height, true, encode);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Simple.ImageResizer
         }
 
 
-        public byte[] Resize(int width, int height, bool crop, ImageEnCode objImage)
+        public byte[] Resize(int width, int height, bool crop, ImageEncode encode)
         {
             if (width < 0)
                 throw new ArgumentException("width < 0");
@@ -121,7 +121,7 @@ namespace Simple.ImageResizer
                 bitmapSource = ResizeImageByWidth(_imageBytes, width);
             }
 
-            _imageBytes = EncodeImageData(bitmapSource, objImage);
+            _imageBytes = EncodeImageData(bitmapSource, encode);
             return _imageBytes;
         }
 
@@ -276,15 +276,12 @@ namespace Simple.ImageResizer
         }
 
 
-        private byte[] EncodeImageData(ImageSource image, ImageEnCode objImage)
+        private byte[] EncodeImageData(ImageSource image, ImageEncode encode)
         {
             byte[] buffer = null;
             BitmapEncoder encoder = null;
-            if (objImage is JpegImageEncode)
-            {
-                var quality = objImage.GetType().GetProperty("QualityLevel").GetValue(objImage, null);
-                encoder = new JpegBitmapEncoder { QualityLevel = (int)quality };
-            }
+            encoder = encode.GetBitmapEncoder();
+
             if (image is BitmapSource)
             {
                 using (var stream = new MemoryStream())

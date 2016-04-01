@@ -7,8 +7,8 @@ using System.Windows.Media.Imaging;
 
 namespace Simple.ImageResizer
 {
-    public class ImageEnCode
+    public abstract class ImageEncode
     {
-        
+        internal abstract BitmapEncoder GetBitmapEncoder();
     }
 }

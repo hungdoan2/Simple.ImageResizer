@@ -61,9 +61,9 @@ namespace Simple.ImageResizer.MvcExtensions
                 if (!Directory.Exists(resizedPath))
                     Directory.CreateDirectory(new FileInfo(resizedPath).DirectoryName);
 
-                if (true)
+                if (!File.Exists(resizedPath))
                 {
-                    var encoder =  new JpegBitmapEncoder { QualityLevel = quality };
+                    var encoder =  new JpegImageEncode { QualityLevel = quality };
 
                     var imageResizer = new ImageResizer(filepath);
                     if (width > 0 && height > 0)
