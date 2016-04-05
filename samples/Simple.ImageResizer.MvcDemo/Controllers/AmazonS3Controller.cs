@@ -37,19 +37,17 @@ namespace Simple.ImageResizer.MvcDemo.Controllers
             {
                 Settings = new List<ResizeSetting>
                 {
-                    new ResizeSetting
+                     new ResizeSetting
                     {
                         Name = "Large",
                         Width = 700,
-                        //ImageEncoding = ImageEncoding.Jpg90
-                        encoder = new JpegBitmapEncoder { QualityLevel = 100 }
+                        ImageEncoding = ImageEncoding.Jpg90
                     },
                     new ResizeSetting
                     {
                         Name = "Small",
-                        Width = 700,
-                        encoder = new JpegBitmapEncoder { QualityLevel = 50 }
-                        //ImageEncoding = ImageEncoding.Jpg90
+                        Width = 300,
+                        ImageEncoding = ImageEncoding.Jpg90
                     },
                     new ResizeSetting
                     {
