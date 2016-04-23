@@ -116,6 +116,10 @@ namespace Simple.ImageResizer
             {
                 bitmapSource = ResizeImageByWidth(_imageBytes, width);
             }
+            else if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
+            }
 
             _imageBytes = EncodeImageData(bitmapSource, encoding);
             return _imageBytes;
@@ -142,6 +146,10 @@ namespace Simple.ImageResizer
             else if (width > 0)
             {
                 bitmapSource = ResizeImageByWidth(_imageBytes, width);
+            }
+            else if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
             }
 
             _imageBytes = EncodeImageData(bitmapSource, encode);
