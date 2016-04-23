@@ -42,9 +42,32 @@ namespace Simple.ImageResizer
             return Resize(width, 0, encode);
         }
 
-        public byte[] ResizeIfWidthLargerThan(int width, ImageEncoding encoding)
+        public byte[] ResizeImageWidth(int width, ImageEncode encode)
         {
-            return Resize(width, 0, encoding);
+            //return Resize(width, 0, encoding);
+            BitmapSource bitmapSource = null;
+
+            if (width > 0)
+            {
+                bitmapSource = ResizeImageByWidth(_imageBytes, width);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encode);
+            return _imageBytes;
+        }
+
+        public byte[] ResizeImageHeight(int height, ImageEncode encoding)
+        {
+            //return Resize(width, 0, encoding);
+            BitmapSource bitmapSource = null;
+
+            if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encoding);
+            return _imageBytes;
         }
 
         /// <summary>

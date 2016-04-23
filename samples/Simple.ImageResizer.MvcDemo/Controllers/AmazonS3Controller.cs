@@ -103,7 +103,6 @@ namespace Simple.ImageResizer.MvcDemo.Controllers
         public int Width { get; set; }
         public int Height { get; set; }
         public ImageEncoding ImageEncoding { get; set; }
-        public BitmapEncoder encoder { get; set; }
 
     }
 
