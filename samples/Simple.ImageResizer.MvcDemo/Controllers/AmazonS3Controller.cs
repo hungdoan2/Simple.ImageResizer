@@ -11,6 +11,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Simple.ImageResizer.MvcDemo.Properties;
 using Simple.ImageResizer.MvcDemo.ViewModels;
+using System.Windows.Media.Imaging;
 
 namespace Simple.ImageResizer.MvcDemo.Controllers
 {
@@ -36,7 +37,7 @@ namespace Simple.ImageResizer.MvcDemo.Controllers
             {
                 Settings = new List<ResizeSetting>
                 {
-                    new ResizeSetting
+                     new ResizeSetting
                     {
                         Name = "Large",
                         Width = 700,

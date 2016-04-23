@@ -12,10 +12,10 @@ namespace Simple.ImageResizer.MvcExtensions
             return (extension.ToLower() == "jpg") ? "jpeg" : extension;
         }
 
-        public static string GetPathForResizedImage(this string orgPath, int width = 0, int height = 0)
+        public static string GetPathForResizedImage(this string orgPath, int width = 0, int height = 0, int quality = 100)
         {
             var fileInfo = new FileInfo(orgPath);
-            string resizedPath = Path.Combine(fileInfo.DirectoryName, "resized", width + "x" + height,
+            string resizedPath = Path.Combine(fileInfo.DirectoryName, "resized", width + "x" + height+ "x"+ quality,
                                               Path.GetFileName(orgPath));
             return resizedPath;
         }

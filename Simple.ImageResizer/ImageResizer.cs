@@ -36,9 +36,38 @@ namespace Simple.ImageResizer
         {
             return Resize(width, 0, encoding);
         }
-        public byte[] ResizeIfWidthLargerThan(int width, ImageEncoding encoding)
+
+        public byte[] Resize(int width, ImageEncode encode)
         {
-            return Resize(width, 0, encoding);
+            return Resize(width, 0, encode);
+        }
+
+        public byte[] ResizeImageWidth(int width, ImageEncode encode)
+        {
+            //return Resize(width, 0, encoding);
+            BitmapSource bitmapSource = null;
+
+            if (width > 0)
+            {
+                bitmapSource = ResizeImageByWidth(_imageBytes, width);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encode);
+            return _imageBytes;
+        }
+
+        public byte[] ResizeImageHeight(int height, ImageEncode encoding)
+        {
+            //return Resize(width, 0, encoding);
+            BitmapSource bitmapSource = null;
+
+            if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encoding);
+            return _imageBytes;
         }
 
         /// <summary>
@@ -51,6 +80,11 @@ namespace Simple.ImageResizer
         public byte[] Resize(int width, int height, ImageEncoding encoding)
         {
             return Resize(width, height, true, encoding);
+        }
+
+        public byte[] Resize(int width, int height, ImageEncode encode)
+        {
+            return Resize(width, height, true, encode);
         }
 
         /// <summary>
@@ -82,8 +116,43 @@ namespace Simple.ImageResizer
             {
                 bitmapSource = ResizeImageByWidth(_imageBytes, width);
             }
+            else if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
+            }
 
             _imageBytes = EncodeImageData(bitmapSource, encoding);
+            return _imageBytes;
+        }
+
+
+        public byte[] Resize(int width, int height, bool crop, ImageEncode encode)
+        {
+            if (width < 0)
+                throw new ArgumentException("width < 0");
+            if (height < 0)
+                throw new ArgumentException("height < 0");
+
+            BitmapSource bitmapSource = null;
+
+            if (width > 0 && height > 0 && crop)
+            {
+                bitmapSource = ScaleToFill(width, height);
+            }
+            else if (width > 0 && height > 0 && !crop)
+            {
+                bitmapSource = ScaleToFit(width, height);
+            }
+            else if (width > 0)
+            {
+                bitmapSource = ResizeImageByWidth(_imageBytes, width);
+            }
+            else if (height > 0)
+            {
+                bitmapSource = ResizeImageByHeight(_imageBytes, height);
+            }
+
+            _imageBytes = EncodeImageData(bitmapSource, encode);
             return _imageBytes;
         }
 
@@ -97,7 +166,7 @@ namespace Simple.ImageResizer
 
             BitmapSource bitmapSource;
             ImageSize imageSize;
-            
+
             if (heightRatio > widthRatio)
             {
                 bitmapSource = ResizeImageByHeight(_imageBytes, height);
@@ -215,19 +284,54 @@ namespace Simple.ImageResizer
             }
             if (image is BitmapSource)
             {
-                var stream = new MemoryStream();
-                if (encoder != null)
+                using (var stream = new MemoryStream())
                 {
-                    var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
-                    encoder.Frames.Add(bitmapFrame);
-                    encoder.Save(stream);
+                    if (encoder != null)
+                    {
+                        var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
+                        encoder.Frames.Add(bitmapFrame);
+                        encoder.Save(stream);
+                    }
+                    stream.Seek(0L, SeekOrigin.Begin);
+                    buffer = new byte[stream.Length];
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        reader.Read(buffer, 0, (int)stream.Length);
+                        reader.Close();
+                    }
+                    stream.Close();
                 }
-                stream.Seek(0L, SeekOrigin.Begin);
-                buffer = new byte[stream.Length];
-                var reader = new BinaryReader(stream);
-                reader.Read(buffer, 0, (int)stream.Length);
-                reader.Close();
-                stream.Close();
+
+            }
+            return buffer;
+        }
+
+
+        private byte[] EncodeImageData(ImageSource image, ImageEncode encode)
+        {
+            byte[] buffer = null;
+            BitmapEncoder encoder = null;
+            encoder = encode.GetBitmapEncoder();
+
+            if (image is BitmapSource)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    if (encoder != null)
+                    {
+                        var bitmapFrame = BitmapFrame.Create(image as BitmapSource);
+                        encoder.Frames.Add(bitmapFrame);
+                        encoder.Save(stream);
+                    }
+                    stream.Seek(0L, SeekOrigin.Begin);
+                    buffer = new byte[stream.Length];
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        reader.Read(buffer, 0, (int)stream.Length);
+                        reader.Close();
+                    }
+                    stream.Close();
+                }
             }
             return buffer;
         }
